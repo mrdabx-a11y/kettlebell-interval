@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b10">
+<title>Kettlebell Interval</title>
+<style>
+:root{color-scheme:dark;--bg:#090b10;--card:#141923;--line:#293140;--muted:#98a2b3;--accent:#7cf29a;--danger:#ff7777}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f5f7fb;font-family:system-ui,-apple-system,Segoe UI,sans-serif}.app{max-width:760px;margin:auto;padding:18px 18px 110px}h1{font-size:25px;margin:0}p{color:var(--muted)}.hero,.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px}.hero{background:linear-gradient(145deg,#173023,#111824)}.hero h2{font-size:30px;margin:0 0 8px}.row,.actions,.chips{display:flex;gap:8px;flex-wrap:wrap}.section{margin-top:24px}.btn{border:0;border-radius:14px;padding:12px 15px;font-weight:800;background:#202735;color:#fff}.primary{background:var(--accent);color:#071109}.danger{background:#381d23;color:#ffc0c0}.small{padding:8px 10px;font-size:12px}.grid{display:grid;gap:10px}.workout{display:grid;gap:10px}.meta{font-size:12px;color:var(--muted)}input,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#0d1118;color:#fff}label{display:grid;gap:6px;font-size:12px;color:#d6dce4}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.wide{grid-column:1/-1}.exercise{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.list{max-height:420px;overflow:auto}.chip{padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:#151a22;color:var(--muted)}.chip.active{color:var(--accent);border-color:#4c7e5a}.builderItem{border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:8px}.times{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.nav{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:min(720px,calc(100% - 28px));display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:7px;background:#151a22e8;border:1px solid var(--line);border-radius:20px}.view{display:none}.view.active{display:block}.timer{position:fixed;inset:0;background:radial-gradient(circle at 50% -10%,#173d26,transparent 35%),#090b10;display:none;z-index:99;padding:22px}.timer.active{display:flex;flex-direction:column}.phase{text-align:center;color:var(--accent);font-weight:900;letter-spacing:.15em}.timer h2{text-align:center;font-size:38px;margin:12vh 0 8px}.next{text-align:center;color:var(--muted)}.clock{font-size:82px;font-weight:900;text-align:center;margin-top:9vh;font-variant-numeric:tabular-nums}.stats{text-align:center;color:var(--muted);margin-top:12px}.timerActions{margin-top:auto;display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px}.timerActions button{min-height:58px}.pill{display:inline-block;padding:7px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1>Kettlebell Interval</h1><p>Eigene Workouts bauen · Zeiten frei einstellen · Timer starten</p></header>
+
+<section id="home" class="view active">
+<div class="hero"><h2>Trainieren statt Timer tippen.</h2><p>Belastung, Wechselzeit und Rundenpause stellst du selbst ein. Die App führt dich automatisch durch dein Training.</p><div class="actions"><button class="btn primary" id="quick">20-Min Quick Start</button><button class="btn" onclick="show('builder')">Workout bauen</button></div></div>
+<div class="section"><div class="row" style="justify-content:space-between"><h3>Meine Workouts</h3><button class="btn small" id="newBtn">+ Neu</button></div><div id="workouts" class="grid"></div></div>
+</section>
+
+<section id="builder" class="view">
+<h3>Workout erstellen</h3>
+<div class="card form">
+<label class="wide">Name<input id="name" value="Mein Kettlebell Workout"></label>
+<label>Gesamtdauer (Min.)<input id="minutes" type="number" min="1" value="20"></label>
+<label>Rundenpause (Sek.)<input id="roundRest" type="number" min="0" value="60"></label>
+<label>Standard Belastung (Sek.)<input id="work" type="number" min="5" value="30"></label>
+<label>Standard Wechselzeit (Sek.)<input id="transition" type="number" min="0" value="15"></label>
+</div>
+<div class="section"><h3>Übungen im Workout</h3><div id="selected"></div></div>
+<div class="section"><div class="row" style="justify-content:space-between"><h3>Übungsbibliothek</h3><button class="btn small" id="custom">+ Eigene</button></div><input id="search" placeholder="Übung suchen …"><div id="chips" class="chips" style="margin:10px 0"></div><div id="library" class="card list"></div></div>
+<div class="actions section"><button class="btn primary" id="save">Speichern</button><button class="btn" id="preview">Direkt starten</button></div>
+</section>
+
+<section id="settings" class="view">
+<h3>Einstellungen</h3><div class="card form">
+<label>Start-Countdown<input id="countdown" type="number" min="0" value="5"></label>
+<label>Ton<select id="sound"><option value="1">An</option><option value="0">Aus</option></select></label>
+<label>Vibration<select id="vibrate"><option value="1">An</option><option value="0">Aus</option></select></label>
+<label>Bildschirm wach halten<select id="wake"><option value="1">An</option><option value="0">Aus</option></select></label>
+</div><p>Die App speichert deine Workouts lokal auf dem Gerät.</p>
+</section>
+</div>
+
+<div class="nav"><button class="btn" onclick="show('home')">Workouts</button><button class="btn" onclick="show('builder')">Builder</button><button class="btn" onclick="show('settings')">Einstellungen</button></div>
+
+<section id="timer" class="timer">
+<div class="row" style="justify-content:space-between"><button class="btn small" id="exit">Beenden</button><div class="phase" id="phase">BEREIT</div><button class="btn small" id="mute">Ton</button></div>
+<h2 id="exercise">Workout startet</h2><div class="next" id="next"></div><div class="clock" id="clock">00:05</div><div class="stats" id="stats"></div>
+<div class="timerActions"><button class="btn" id="prev">Zurück</button><button class="btn primary" id="pause">Pause</button><button class="btn" id="skip">Weiter</button></div>
+</section>
+
+<script>
+const EX=[
+['Swing','Ballistik'],['Two-Hand Swing','Ballistik'],['One-Hand Swing','Ballistik'],['Alternating Swing','Ballistik'],['Dead-Stop Swing','Ballistik'],['Power Swing','Ballistik'],['American Swing','Ballistik'],['Russian Swing','Ballistik'],['Side Swing','Ballistik'],['Outside-the-Leg Swing','Ballistik'],
+['Clean','Clean'],['One-Arm Clean','Clean'],['Double Kettlebell Clean','Clean'],['Dead Clean','Clean'],['Hang Clean','Clean'],['Alternating Clean','Clean'],['Clean to Squat','Clean'],['Clean to Lunge','Clean'],
+['Strict Press','Press'],['Military Press','Press'],['Push Press','Press'],['Jerk','Press'],['Double Jerk','Press'],['Bottom-Up Press','Press'],['Half-Kneeling Press','Press'],['Tall-Kneeling Press','Press'],['See-Saw Press','Press'],['Sots Press','Press'],['Floor Press','Press'],['Bridge Floor Press','Press'],
+['Goblet Squat','Squat'],['Front Rack Squat','Squat'],['Double Front Squat','Squat'],['Overhead Squat','Squat'],['Sumo Squat','Squat'],['Box Squat','Squat'],['Cossack Squat','Squat'],['Split Squat','Squat'],['Bulgarian Split Squat','Squat'],['Squat to Press','Squat'],['Thruster','Squat'],
+['Reverse Lunge','Lunge'],['Forward Lunge','Lunge'],['Walking Lunge','Lunge'],['Lateral Lunge','Lunge'],['Curtsy Lunge','Lunge'],['Front Rack Lunge','Lunge'],['Overhead Lunge','Lunge'],['Clean & Lunge','Lunge'],
+['Deadlift','Hinge'],['Romanian Deadlift','Hinge'],['Single-Leg Deadlift','Hinge'],['Suitcase Deadlift','Hinge'],['Sumo Deadlift','Hinge'],['Kickstand Deadlift','Hinge'],['Double Kettlebell Deadlift','Hinge'],['High Pull','Hinge'],['One-Arm High Pull','Hinge'],
+['Snatch','Snatch'],['Half Snatch','Snatch'],['Dead Snatch','Snatch'],['Hang Snatch','Snatch'],['Double Snatch','Snatch'],['Long Cycle Clean & Jerk','Snatch'],
+['Bent-Over Row','Pull'],['One-Arm Row','Pull'],['Renegade Row','Pull'],['Gorilla Row','Pull'],['Plank Row','Pull'],['Upright Row','Pull'],['High Pull to Catch','Pull'],
+['Turkish Get-Up','Core'],['Half Get-Up','Core'],['Sit-Up to Press','Core'],['Russian Twist','Core'],['Seated Halo','Core'],['Windmill','Core'],['Half-Kneeling Windmill','Core'],['Bent Press','Core'],['Side Bend','Core'],['Dead Bug Pullover','Core'],['Hollow Hold Pullover','Core'],['Plank Drag','Core'],['Around the World','Core'],['Figure Eight','Core'],['Figure Eight to Hold','Core'],['Halo','Core'],
+['Farmer Carry','Carry'],['Suitcase Carry','Carry'],['Rack Carry','Carry'],['Overhead Carry','Carry'],['Bottom-Up Carry','Carry'],['Waiter Carry','Carry'],['Front Rack March','Carry'],['Suitcase March','Carry'],['Overhead March','Carry'],
+['Kettlebell Burpee','Conditioning'],['Burpee Deadlift','Conditioning'],['Swing to Squat','Conditioning'],['Clean & Press','Conditioning'],['Clean & Jerk','Conditioning'],['Clean & Push Press','Conditioning'],['Snatch to Overhead Lunge','Conditioning'],['Man Maker','Conditioning'],['Devil Press','Conditioning'],['Mountain Climber Drag','Conditioning'],
+['Arm Bar','Mobility'],['Prying Goblet Squat','Mobility'],['Goblet Squat Curl','Mobility'],['Shoulder Halo','Mobility'],['Hip Shift','Mobility'],['Kneeling Windmill','Mobility']
+].map((x,i)=>({id:i,name:x[0],cat:x[1]}));
+const $=id=>document.getElementById(id);
+let workouts=JSON.parse(localStorage.getItem('kb.workouts')||'null')||[];
+let settings=JSON.parse(localStorage.getItem('kb.settings')||'null')||{countdown:5,sound:1,vibrate:1,wake:1};
+let builder={id:null,name:'Mein Kettlebell Workout',minutes:20,roundRest:60,work:30,transition:15,items:[]},cat='Alle',T=null,wakeLock=null;
+if(!workouts.length){workouts=[{id:crypto.randomUUID(),name:'20 Min Kettlebell Full Body',minutes:20,roundRest:60,work:30,transition:15,items:['Swing','Goblet Squat','One-Arm Row','Clean & Press','Reverse Lunge','Halo'].map(name=>({name,work:30,transition:15,side:'Beide'}))}];persist();}
+function persist(){localStorage.setItem('kb.workouts',JSON.stringify(workouts));localStorage.setItem('kb.settings',JSON.stringify(settings))}
+function show(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$(v).classList.add('active')}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function sec(s){s=Math.max(0,Math.ceil(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function read(){builder.name=$('name').value.trim()||'Mein Workout';builder.minutes=Math.max(1,+$('minutes').value||20);builder.roundRest=Math.max(0,+$('roundRest').value||0);builder.work=Math.max(5,+$('work').value||30);builder.transition=Math.max(0,+$('transition').value||0)}
+function sync(){ $('name').value=builder.name;$('minutes').value=builder.minutes;$('roundRest').value=builder.roundRest;$('work').value=builder.work;$('transition').value=builder.transition}
+function renderWorkouts(){ $('workouts').innerHTML=workouts.map(w=>'<div class="card workout"><b>'+esc(w.name)+'</b><div class="meta">'+w.minutes+' Min · '+w.items.length+' Übungen</div><div class="actions"><button class="btn primary" onclick="startById(\''+w.id+'\')">Start</button><button class="btn" onclick="editW(\''+w.id+'\')">Bearbeiten</button><button class="btn danger small" onclick="delW(\''+w.id+'\')">Löschen</button></div></div>').join('')}
+function renderBuilder(){read();$('selected').innerHTML=builder.items.length?builder.items.map((it,i)=>'<div class="builderItem"><div class="row" style="justify-content:space-between"><b>'+(i+1)+'. '+esc(it.name)+'</b><button class="btn danger small" onclick="rem('+i+')">×</button></div><div class="times"><label>Belastung<input type="number" value="'+it.work+'" onchange="builder.items['+i+'].work=+this.value"></label><label>Wechsel<input type="number" value="'+it.transition+'" onchange="builder.items['+i+'].transition=+this.value"></label><label>Seite<select onchange="builder.items['+i+'].side=this.value"><option>Beide</option><option '+(it.side==='Links'?'selected':'')+'>Links</option><option '+(it.side==='Rechts'?'selected':'')+'>Rechts</option><option '+(it.side==='Wechselnd'?'selected':'')+'>Wechselnd</option></select></label></div></div>').join(''):'<p>Noch keine Übung gewählt.</p>'}
+function renderLib(){let cats=['Alle',...new Set(EX.map(x=>x.cat))];$('chips').innerHTML=cats.map(c=>'<button class="chip '+(cat===c?'active':'')+'" onclick="cat=\''+c+'\';renderLib()">'+c+'</button>').join('');let q=$('search').value.toLowerCase();$('library').innerHTML=EX.filter(x=>(cat==='Alle'||x.cat===cat)&&(!q||x.name.toLowerCase().includes(q))).map(x=>'<div class="exercise"><div><b>'+x.name+'</b><div class="meta">'+x.cat+'</div></div><button class="btn small" onclick="add('+x.id+')">Hinzufügen</button></div>').join('')}
+function add(id){let x=EX[id];read();builder.items.push({name:x.name,work:builder.work,transition:builder.transition,side:'Beide'});renderBuilder()}
+function rem(i){builder.items.splice(i,1);renderBuilder()}
+function save(){read();if(!builder.items.length)return alert('Füge mindestens eine Übung hinzu.');let copy=structuredClone(builder);copy.id=copy.id||crypto.randomUUID();let i=workouts.findIndex(x=>x.id===copy.id);if(i>=0)workouts[i]=copy;else workouts.unshift(copy);persist();renderWorkouts();show('home')}
+function editW(id){builder=structuredClone(workouts.find(x=>x.id===id));sync();renderBuilder();show('builder')}
+function delW(id){if(confirm('Workout löschen?')){workouts=workouts.filter(x=>x.id!==id);persist();renderWorkouts()}}
+function startById(id){start(workouts.find(x=>x.id===id))}
+function timeline(w){let out=[],limit=w.minutes*60,used=0,round=1,i=0;while(used<limit){let it=w.items[i],d=Math.min(it.work||w.work,limit-used);out.push({type:'work',name:it.name,side:it.side,d,round,i});used+=d;if(used>=limit)break;d=Math.min(it.transition??w.transition,limit-used);if(d){out.push({type:'transition',name:'Wechsel',d,round,i});used+=d}i++;if(i>=w.items.length&&used<limit){i=0;d=Math.min(w.roundRest,limit-used);if(d){out.push({type:'rest',name:'Rundenpause',d,round,i:0});used+=d}round++}}return out}
+async function start(w){if(!w?.items.length)return;let tl=[];if(settings.countdown>0)tl.push({type:'countdown',name:'Bereit machen',d:settings.countdown,round:1,i:0});tl.push(...timeline(w));T={w,tl,step:0,left:tl[0].d,total:tl.reduce((a,x)=>a+x.d,0),paused:false,last:performance.now(),muted:false};$('timer').classList.add('active');await keepAwake();cue('start');renderTimer();T.int=setInterval(tick,100)}
+function tick(){if(!T||T.paused)return;let n=performance.now(),d=(n-T.last)/1000;T.last=n;T.left-=d;T.total=Math.max(0,T.total-d);if(T.left<=0)advance(1);else renderTimer()}
+function advance(dir){if(!T)return;T.step+=dir;if(T.step<0)T.step=0;if(T.step>=T.tl.length)return finish();T.left=T.tl[T.step].d;T.last=performance.now();cue(T.tl[T.step].type);renderTimer()}
+function renderTimer(){let s=T.tl[T.step];$('phase').textContent=({countdown:'BEREIT',work:'ARBEIT',transition:'WECHSEL',rest:'PAUSE'})[s.type];$('exercise').textContent=s.type==='work'?s.name+(s.side&&s.side!=='Beide'?' · '+s.side:''):s.name;$('next').textContent=T.tl[T.step+1]?'Als Nächstes: '+T.tl[T.step+1].name:'Letzter Abschnitt';$('clock').textContent=sec(T.left);$('stats').textContent='Runde '+(s.round||1)+' · Übung '+(Math.min((s.i||0)+1,T.w.items.length))+'/'+T.w.items.length+' · Rest '+sec(T.total);$('pause').textContent=T.paused?'Weiter':'Pause';$('mute').textContent=T.muted?'Stumm':'Ton'}
+function finish(){cue('finish');stop();alert('Workout geschafft!')}
+function stop(){if(T?.int)clearInterval(T.int);T=null;$('timer').classList.remove('active');try{wakeLock?.release()}catch{}wakeLock=null}
+function cue(type){if(T?.muted)return;if(settings.vibrate&&navigator.vibrate)navigator.vibrate(type==='work'?[120,60,120]:type==='finish'?[180,80,180,80,220]:[100]);if(!settings.sound)return;try{let c=new AudioContext(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=type==='work'?880:type==='finish'?1100:620;g.gain.value=.07;o.start();o.stop(c.currentTime+.12)}catch{}}
+async function keepAwake(){if(settings.wake&&navigator.wakeLock)try{wakeLock=await navigator.wakeLock.request('screen')}catch{}}
+$('quick').onclick=()=>start(workouts[0]);$('newBtn').onclick=()=>{builder={id:null,name:'Mein Kettlebell Workout',minutes:20,roundRest:60,work:30,transition:15,items:[]};sync();renderBuilder();show('builder')};$('search').oninput=renderLib;$('custom').onclick=()=>{let n=prompt('Name der eigenen Übung:');if(n){read();builder.items.push({name:n.trim(),work:builder.work,transition:builder.transition,side:'Beide'});renderBuilder()}};$('save').onclick=save;$('preview').onclick=()=>{read();if(builder.items.length)start(structuredClone(builder))};['name','minutes','roundRest','work','transition'].forEach(id=>$(id).oninput=renderBuilder);
+$('countdown').value=settings.countdown;$('sound').value=settings.sound;$('vibrate').value=settings.vibrate;$('wake').value=settings.wake;['countdown','sound','vibrate','wake'].forEach(id=>$(id).onchange=()=>{settings={countdown:+$('countdown').value,sound:+$('sound').value,vibrate:+$('vibrate').value,wake:+$('wake').value};persist()});
+$('pause').onclick=()=>{T.paused=!T.paused;T.last=performance.now();renderTimer()};$('skip').onclick=()=>advance(1);$('prev').onclick=()=>advance(-1);$('exit').onclick=()=>{if(confirm('Workout beenden?'))stop()};$('mute').onclick=()=>{T.muted=!T.muted;renderTimer()};
+renderWorkouts();sync();renderBuilder();renderLib();
+</script>
+</body></html>
