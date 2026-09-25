@@ -67,8 +67,18 @@ const EX=[
 ['Turkish Get-Up','Core'],['Half Get-Up','Core'],['Sit-Up to Press','Core'],['Russian Twist','Core'],['Seated Halo','Core'],['Windmill','Core'],['Half-Kneeling Windmill','Core'],['Bent Press','Core'],['Side Bend','Core'],['Dead Bug Pullover','Core'],['Hollow Hold Pullover','Core'],['Plank Drag','Core'],['Around the World','Core'],['Figure Eight','Core'],['Figure Eight to Hold','Core'],['Halo','Core'],
 ['Farmer Carry','Carry'],['Suitcase Carry','Carry'],['Rack Carry','Carry'],['Overhead Carry','Carry'],['Bottom-Up Carry','Carry'],['Waiter Carry','Carry'],['Front Rack March','Carry'],['Suitcase March','Carry'],['Overhead March','Carry'],
 ['Kettlebell Burpee','Conditioning'],['Burpee Deadlift','Conditioning'],['Swing to Squat','Conditioning'],['Clean & Press','Conditioning'],['Clean & Jerk','Conditioning'],['Clean & Push Press','Conditioning'],['Snatch to Overhead Lunge','Conditioning'],['Man Maker','Conditioning'],['Devil Press','Conditioning'],['Mountain Climber Drag','Conditioning'],
+['Bizeps Curls','Arme'],
 ['Arm Bar','Mobility'],['Prying Goblet Squat','Mobility'],['Goblet Squat Curl','Mobility'],['Shoulder Halo','Mobility'],['Hip Shift','Mobility'],['Kneeling Windmill','Mobility']
-].map((x,i)=>({id:i,name:x[0],cat:x[1]}));
+].map((x,i)=>{
+  const old=x[1];
+  const cat =
+    ['Squat','Lunge'].includes(old) ? 'Beine' :
+    ['Hinge','Pull'].includes(old) ? 'Rücken' :
+    old==='Core' ? 'Core' :
+    ['Press','Clean','Snatch'].includes(old) || x[0]==='Bizeps Curls' ? 'Arme' :
+    'Oberkörper';
+  return {id:i,name:x[0],cat};
+});
 const $=id=>document.getElementById(id);
 let workouts=JSON.parse(localStorage.getItem('kb.workouts')||'null')||[];
 let settings=JSON.parse(localStorage.getItem('kb.settings')||'null')||{countdown:5,sound:1,speech:1,vibrate:1,wake:1};
@@ -116,7 +126,8 @@ const TECH={
 'Bottom-Up Press':{kind:'press',tips:['Sehr leicht beginnen und Griff fest','Unterarm möglichst senkrecht','Langsam drücken – Schulter bleibt unten']},
 'Floor Press':{kind:'floorpress',tips:['Schulterblatt bleibt am Boden','Ellbogen etwa 30–45° vom Körper','Handgelenk gerade über dem Ellbogen']},
 'Bridge Floor Press':{kind:'floorpress',tips:['Becken stabil halten','Rippen unten, Gesäß angespannt','Kettlebell kontrolliert senken und drücken']},
-'Clean & Press':{kind:'press',tips:['Clean eng am Körper in die Rack-Position','Handgelenk neutral, Unterarm senkrecht','Beim Press Rippen unten halten']}
+'Clean & Press':{kind:'press',tips:['Clean eng am Körper in die Rack-Position','Handgelenk neutral, Unterarm senkrecht','Beim Press Rippen unten halten']},
+'Bizeps Curls':{kind:'curl',tips:['Ellbogen eng am Oberkörper halten','Oberkörper ruhig – kein Schwung aus Hüfte oder Rücken','Handgelenke neutral und kontrolliert absenken']}
 };
 function demoSvg(kind){
 const base='<line class="demoGround" x1="28" y1="112" x2="182" y2="112"/>';
@@ -132,6 +143,7 @@ if(kind==='hinge')return '<svg viewBox="0 0 210 125">'+base+'<g class="hingeMove
 if(kind==='highpull')return '<svg viewBox="0 0 210 125">'+base+'<circle class="demoHead" cx="105" cy="28" r="9"/><path class="demoStroke" d="M105 39v43M105 82L88 108M105 82l18 26M105 52L85 72M105 52l20 20"/>'+bell(105,82,'pressMove')+'</svg>';
 if(kind==='pushpress'||kind==='press')return '<svg viewBox="0 0 210 125">'+base+'<circle class="demoHead" cx="105" cy="30" r="9"/><path class="demoStroke" d="M105 40v42M105 82L88 108M105 82l18 26M105 51L86 67M105 51l19 16"/>'+bell(124,62,'pressMove')+'</svg>';
 if(kind==='floorpress')return '<svg viewBox="0 0 210 125">'+base+'<circle class="demoHead" cx="56" cy="91" r="9"/><path class="demoStroke" d="M66 91h61M82 91L70 108M119 91l18 17M103 88L103 62"/>'+bell(103,58,'pressMove')+'</svg>';
+if(kind==='curl')return '<svg viewBox="0 0 210 125">'+base+'<circle class="demoHead" cx="105" cy="27" r="9"/><path class="demoStroke" d="M105 38v43M105 81L88 108M105 81l18 27M105 50L86 64M105 50l19 14"/>'+bell(105,83,'pressMove')+'</svg>';
 return '<svg viewBox="0 0 210 125">'+base+'<circle class="demoHead" cx="105" cy="30" r="10"/><path class="demoStroke" d="M105 42v40M105 54L84 74M105 54l21 20M105 82L88 108M105 82l17 26"/>'+bell(105,88,'kbMove')+'</svg>';
 }
 function renderDemo(ex,label){
